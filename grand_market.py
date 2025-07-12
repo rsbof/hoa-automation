@@ -9,6 +9,7 @@ def main():
     d(index=1, className='android.widget.TextView', text='Buy').click()
     while True:
         for category in ['material', 'equipped']:
+            time.sleep(1)
             d.press(0x7a)
             time.sleep(1)
             d(index=0, className='android.widget.Image',text=category).click()
