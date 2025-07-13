@@ -5,31 +5,36 @@ from typing import Optional
 import uiautomator2 as u2
 from uiautomator2 import Device, UiObject
 
-def main():
-    sh = logging.StreamHandler()
-    sh.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    logger.addHandler(sh)
 
-    d = u2.connect()
-    logging.info("Device connected: %s", d.info)
+def run(args):
+    match args.command:
+        case 'run':
+            sh = logging.StreamHandler()
+            sh.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+            logger = logging.getLogger()
+            logger.setLevel(logging.INFO)
+            logger.addHandler(sh)
 
-    d.press(0x7a)
-    d(index=1, className='android.widget.TextView', text='Buy').click()
-    while True:
-        for category in ['material', 'equipped']:
-            time.sleep(1)
+            d = u2.connect()
+            logging.info("Device connected: %s", d.info)
+
             d.press(0x7a)
-            time.sleep(1)
-            d(index=0, className='android.widget.Image',text=category).click()
-            if category == 'equipped':
-                buy_items(d, 'Arena Token')
-            else:
-                buy_items(d)
+            d(index=1, className='android.widget.TextView', text='Buy').click()
+            while True:
+                for category in ['material', 'equipped']:
+                    time.sleep(1)
+                    d.press(0x7a)
+                    time.sleep(1)
+                    d(index=0, className='android.widget.Image',text=category).click()
+                    if category == 'equipped':
+                        buy_items(d, 'Arena Token')
+                    else:
+                        buy_items(d)
 
-        d.press(0x7b)
-        restock(d)
+                d.press(0x7b)
+                restock(d)
+        case _:
+            raise ValueError(f"the command '{args.command}' does not supported.")
 
 def buy_items(d: Device, item_name: str = None):
     try:
